@@ -21,6 +21,51 @@ void _print(char *str){
        
 }
 
+void qprintf(xQueueHandle tx_queue, const char *format, ...){
+    va_list ap;
+    va_start(ap, format);
+    int curr_ch = 0;
+    char out_ch[2] = {'\0', '\0'};
+    char newLine[3] = {'\n' , '\r', '\0'};
+    char percentage[] = "%";
+    char *str;
+    char str_num[10];
+    int out_int;
+
+    /* Block for 1ms. */
+     const portTickType xDelay = 0.1; // portTICK_RATE_MS;
+
+    while( format[curr_ch] != '\0' ){
+        vTaskDelay( xDelay ); 
+        if(format[curr_ch] == '%'){
+            if(format[curr_ch + 1] == 's'){
+                str = va_arg(ap, char *);
+                while (!xQueueSendToBack(tx_queue, str, portMAX_DELAY)); 
+                //parameter(...,The address of a string which is put in the queue,...)
+            }else if(format[curr_ch + 1] == 'd'){
+                itoa(va_arg(ap, int), str_num);
+                while (!xQueueSendToBack(tx_queue, str_num, portMAX_DELAY));                
+            }else if(format[curr_ch + 1] == 'c'){
+                out_ch[0] = (char)va_arg(ap, int);
+                while (!xQueueSendToBack(tx_queue, out_ch, portMAX_DELAY));                                   
+           }else if(format[curr_ch + 1] == 'x'){
+                xtoa(va_arg(ap, int), str_num);
+                while (!xQueueSendToBack(tx_queue, str_num, portMAX_DELAY));                                       
+            }else if(format[curr_ch + 1] == '%'){
+                while (!xQueueSendToBack(tx_queue, percentage, portMAX_DELAY));                                    
+            }
+            curr_ch++;
+        }else if(format[curr_ch] == '\n'){
+            while (!xQueueSendToBack(tx_queue, newLine, portMAX_DELAY));
+        }else{
+            out_ch[0] = format[curr_ch];
+            while (!xQueueSendToBack(tx_queue, out_ch, portMAX_DELAY));         
+        }
+        curr_ch++;
+    }//End of while
+    va_end(ap);
+}
+
 
 //put string into default pipe defined in _print().
 void uprintf(const char *format, ...){

@@ -82,7 +82,11 @@ OBJS += $(SOURCE)/hw_it.o \
 	$(SOURCE)/hw_conf.o
 
 #String, USART...
-OBJS += $(SOURCE)/myio.o \
+OBJS += $(SOURCE)/shell.o \
+	$(SOURCE)/I2C.o \
+	$(SOURCE)/myio.o \
+	$(SOURCE)/stm32f4_discovery_lis3dsh.o \
+	$(SOURCE)/stm32f4_discovery.o \
 	$(SOURCE)/String.o 
 
 # STARTUP FILE

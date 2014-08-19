@@ -8,5 +8,6 @@
 
 void _print(char *str);
 void uprintf(const char *format, ...);
+void qprintf(xQueueHandle tx_queue, const char *format, ...);
 
 #endif
